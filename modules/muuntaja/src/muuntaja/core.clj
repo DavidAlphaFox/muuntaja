@@ -11,13 +11,13 @@
             [clojure.set :as set])
   (:import (java.nio.charset Charset)
            (java.io EOFException IOException Writer ByteArrayInputStream)))
-
+;;核心协议，负责编码和解码
 (defprotocol Muuntaja
   (encoder [this format])
   (decoder [this format])
   (adapters [this])
   (options [this]))
-
+;;处理http请求的协议
 (defprotocol MuuntajaHttp
   (request-format [this request])
   (response-format [this request])
@@ -99,7 +99,7 @@
 (def available-charsets
   "Set of recognised charsets by the current JVM"
   (into #{} (map str/lower-case (.keySet (Charset/availableCharsets)))))
-
+;;默认配置
 (def default-options
   {:http {:extract-content-type extract-content-type-ring
           :extract-accept-charset extract-accept-charset-ring
@@ -357,7 +357,7 @@
              ([data charset]
               (protocols/->StreamableResponse
                 (core/encode-to-output-stream coder data charset)))))))}))
-
+;;创建适配器
 (defn- create-adapters [formats default-charset allow-empty-input? default-return]
   (->> (for [[format {:keys [opts decoder decoder-opts encoder encoder-opts return]}] formats]
          (let [return (or return default-return)]
@@ -382,7 +382,7 @@
    (create default-options))
   ([muuntaja-or-options]
    (if (satisfies? Muuntaja muuntaja-or-options)
-     muuntaja-or-options
+     muuntaja-or-options ;;如果已经实现了Muuntaja的协议，直接返回实例
      (let [{:keys [formats
                    default-format
                    charsets

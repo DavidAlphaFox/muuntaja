@@ -40,13 +40,13 @@
   [handler]
   (letfn [(set-params
             ([request]
-             (let [params (:params request)
-                   body-params (:body-params request)]
+             (let [params (:params request) ;;获取请求中的参数部分
+                   body-params (:body-params request)] ;;获取请求中的body的参数部分，一般是POST或者PUT请求
                (cond
-                 (not (map? body-params)) request
-                 (empty? body-params) request
-                 (empty? params) (assoc request :params body-params)
-                 :else (update request :params merge body-params)))))]
+                 (not (map? body-params)) request ;;如果body参数部分不是MAP
+                 (empty? body-params) request ;;body参数为空
+                 (empty? params) (assoc request :params body-params) ;;参数部分为空
+                 :else (update request :params merge body-params)))))];;合并body部分的参数到params中
     (fn
       ([request]
        (handler (set-params request)))

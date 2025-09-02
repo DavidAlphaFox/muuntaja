@@ -8,3 +8,5 @@ target
 .lein-repl-history
 .nrepl-port
 \#*\#
+.lsp
+.clj-kondo
